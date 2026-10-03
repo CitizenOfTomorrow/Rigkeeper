@@ -40,6 +40,8 @@ RigkeeperAudioProcessorEditor::RigkeeperAudioProcessorEditor (RigkeeperAudioProc
 	{
         rigkCmpt.displayInitialText(); //set default message
     }
+    addChildComponent(rigView);
+    updateRigView();
   
  
     
@@ -65,10 +67,26 @@ void RigkeeperAudioProcessorEditor::paint (juce::Graphics& g)
 void RigkeeperAudioProcessorEditor::resized()
 {
     DBG("resizing Editor ");
-    rigkCmpt.setBounds(getLocalBounds());
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto area = getLocalBounds();
+    if (rigView.hasRig())
+    {
+        rigkCmpt.setBounds(area.removeFromTop(64));
+        rigView.setBounds(area.reduced(16, 8));
+    }
+    else
+        rigkCmpt.setBounds(area);
     audioProcessor.setSavedSize({ getWidth(), getHeight() });
+}
+
+void RigkeeperAudioProcessorEditor::updateRigView()
+{
+    MemoryBlock data;
+    rigfile::Rig rig;
+    const bool parsed = data.fromBase64Encoding(audioProcessor.rigFileContentValue.toString())
+        && rigfile::parse(static_cast<const std::uint8_t*>(data.getData()), data.getSize(), rig);
+    rigView.setRig(parsed ? &rig : nullptr);
+    rigView.setVisible(parsed);
+    resized();
 }
 
 

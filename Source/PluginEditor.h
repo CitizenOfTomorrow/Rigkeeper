@@ -11,9 +11,10 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "Rigkeeper.h"
+#include "RigView.h"
 
-#define MIN_HEIGHT 300
-#define MIN_WIDTH  500
+#define MIN_HEIGHT 420
+#define MIN_WIDTH  600
 #define MAX_HEIGHT 1000
 #define MAX_WIDTH  1000
 //==============================================================================
@@ -37,6 +38,7 @@ public:
         {
             audioProcessor.rigFileNameValue.setValue(rigkCmpt.getRigFileName());
             audioProcessor.rigFileContentValue.setValue(rigkCmpt.getRigContent());
+            updateRigView();
         }
 	}
 
@@ -48,6 +50,7 @@ public:
             rigkCmpt.setRigFileName(audioProcessor.rigFileNameValue.getValue().toString());
             rigkCmpt.getTextValue().referTo(audioProcessor.rigFileNameValue);
             rigkCmpt.repaint();
+            updateRigView();
         
     };
     //bool shouldDropFilesWhenDraggedExternally(const juce::DragAndDropTarget::SourceDetails&, juce::StringArray&, bool&) override;
@@ -57,8 +60,11 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     
+    void updateRigView();
+
     RigkeeperAudioProcessor& audioProcessor;
     Rigkeeper rigkCmpt;
+    RigView rigView;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RigkeeperAudioProcessorEditor)
 };
